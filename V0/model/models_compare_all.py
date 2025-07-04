@@ -31,20 +31,6 @@ def GB(X_train, X_test, y_train, y_test):
     
     return model 
     
-    
-def XGBoost_for_all(X_resampled, y_resampled):    
-    num_boost_round = 100
-    
-    X_train, X_test, y_train, y_test = train_test_split(X_resampled, y_resampled, test_size=0.2, random_state=42)
-    
-    model = XGBClassifier(n_estimators=num_boost_round)
-    model.fit(X_train, y_train, eval_set=[(X_test, y_test)], early_stopping_rounds=100, verbose=False)
-    
-    y_pred = model.predict(X_test)
-    
-    accuracy = accuracy_score(y_test, y_pred)
-    print("Accuracy ========> ", accuracy*100, "%")
-    return model 
 
 
 def XGBoost(X_train, X_test, y_train, y_test, col_name):    

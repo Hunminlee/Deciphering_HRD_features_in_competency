@@ -16,7 +16,6 @@ target_col_2021 = 'C21C05_01H2'
 target_col_2023 = 'C23C05_01H2'
 
 
-
 middle_val = 3.0
 outlier_val = -8.0
 

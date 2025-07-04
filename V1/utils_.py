@@ -5,6 +5,9 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
+from imblearn.combine import SMOTETomek
+from imblearn.under_sampling import RandomUnderSampler
+
 
 
 def data_import(file_path):
@@ -16,17 +19,53 @@ def see_col_idx_and_name(df, meta):
         print(i, j)
 
 
+def normalization(X):
+    # Ensure X is a DataFrame
+    if not isinstance(X, pd.DataFrame):
+        raise ValueError("Input must be a pandas DataFrame")
+
+    columns = X.columns
+
+    sc = StandardScaler()
+    X_scaled = sc.fit_transform(X)
+
+    # Reconstruct the DataFrame with the original column names
+    X_normalized = pd.DataFrame(X_scaled, columns=columns, index=X.index)
+
+    return X_normalized
+
+
+def data_aug_smote(X, y):
+    X_scaled = normalization(X)
+
+    smote = SMOTE(random_state=42)
+    X_res, y_res = smote.fit_resample(X_scaled, y)
+    print(f"After SMOTE - X: {X_res.shape}, y: {pd.Series(y_res).value_counts().to_dict()}")
+
+    X_train, X_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.2, random_state=42)
+    return X_train, X_test, y_train, y_test
+
+
+def data_aug_smote_tomek(X, y):
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    smt = SMOTETomek(random_state=42)
+    X_res, y_res = smt.fit_resample(X_scaled, y)
+    print(f"After SMOTE+Tomek - X: {X_res.shape}, y: {pd.Series(y_res).value_counts().to_dict()}")
+
+    X_train, X_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.2, random_state=42)
+    return X_train, X_test, y_train, y_test
 
 
 
+def data_undersample(X, y):
+    rus = RandomUnderSampler(random_state=42)
+    X_res, y_res = rus.fit_resample(X, y)
+    print(f"After Random Undersampling - X: {X_res.shape}, y: {pd.Series(y_res).value_counts().to_dict()}")
 
-
-
-
-
-
-
-
+    X_train, X_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.2, random_state=42)
+    return X_train, X_test, y_train, y_test
 
 
 #################################################
@@ -46,66 +85,4 @@ def HRD_col_select(X, idx):
     return new_X
 
 
-    
-def data_processing(df, y_target_idx):
-    
-    con1 = df[df.columns[y_target_idx]] == config.middle_val
-    con2 = df[df.columns[y_target_idx]] == config.outlier_val
-    cons = con1 | con2
-    
-    filtered_df = df[~cons]
 
-    #filtered_df = Y_remove_Nan(filtered_df, target_idx)
-    
-    nan_values = filtered_df.isna()
-    nan_count_per_column = nan_values.sum()
-    Nan_cols = []
-    columns_with_nan = nan_count_per_column[nan_count_per_column > 0]  # Filter columns with NaN values
-    print(f"num of Columns with NaN values and count of NaN values: {len(columns_with_nan)}")
-    
-    for column, count in columns_with_nan.items():
-        print(f"Column '{column}' has {count} NaN value(7s).")
-        Nan_cols.append(column)
-    
-    no_nan_dataframe = filtered_df.drop(columns=Nan_cols)
-    
-    no_nan_dataframe[df.columns[y_target_idx]].value_counts()
-    
-    # Define the mapping dictionary
-    replacement = {1: 0, 2: 0, 4: 1, 5: 1}
-    no_nan_dataframe[df.columns[y_target_idx]] = no_nan_dataframe[df.columns[y_target_idx]].replace(replacement)
-    
-    Y = no_nan_dataframe[df.columns[y_target_idx]]
-    X = no_nan_dataframe.drop(columns=df.columns[y_target_idx])
-    #Y.value_counts()
-
-    return X, Y 
-
-
-def normalization(X):
-    # Ensure X is a DataFrame
-    if not isinstance(X, pd.DataFrame):
-        raise ValueError("Input must be a pandas DataFrame")
-    
-    columns = X.columns
-    
-    sc = StandardScaler()
-    X_scaled = sc.fit_transform(X)
-    
-    # Reconstruct the DataFrame with the original column names
-    X_normalized = pd.DataFrame(X_scaled, columns=columns, index=X.index)
-    
-    return X_normalized
-
-
-def data_aug_smote(X, Y):
-
-    X = normalization(X)
-    smote = SMOTE(random_state=42)
-    X_resampled, y_resampled = smote.fit_resample(X, Y)
-    print(f"Data Augmented - X shape: {X_resampled.shape}, Y shape: {y_resampled.shape}")
-    
-    print(f"{pd.DataFrame(y_resampled).value_counts()}")
-    X_train, X_test, y_train, y_test = train_test_split(X_resampled, y_resampled, test_size=0.2, random_state=42)
-    
-    return X_train, X_test, y_train, y_test
