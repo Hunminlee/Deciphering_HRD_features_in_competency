@@ -37,7 +37,12 @@ def train_evaluate_model(X, y, description='', learning_graph_show=False):
 
     # Train
     model = XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=42)
-    model.fit(X_resampled, y_resampled)
+
+    model.fit(
+        X_resampled, y_resampled,
+        eval_set=[(X_resampled, y_resampled), (X_test, y_test)],
+        verbose=False
+    )
 
     # Evaluate
     y_pred = model.predict(X_test)
@@ -123,7 +128,7 @@ def XGBoost(X_train, X_test, y_train, y_test, col_name, learning_graph_show):
     accuracy = accuracy_score(y_test, y_pred)
     print("XGBoost Accuracy ========> ", accuracy * 100, "%")
     if learning_graph_show:
-        visualization.draw_learning_curve(model, col_name)
+        visualization.draw_learning_curve(model)
 
     return model
 
