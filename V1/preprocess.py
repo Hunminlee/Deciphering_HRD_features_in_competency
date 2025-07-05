@@ -174,4 +174,20 @@ def clean_target_classes(df: pd.DataFrame, target_col) -> pd.DataFrame:
 
     df = df.drop(columns=[target_col], errors='ignore')
 
+    #df = standardize_feature_names(df)
+
     return df.reset_index(drop=True), np.array(y)
+
+
+import re
+
+def standardize_feature_names(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Remove year-specific prefixes like W20, W21, W22, W23, etc. from column names.
+    """
+    def remove_year_prefix(col):
+        return re.sub(r'^W\d{2}', '', col)  # Removes 'W20', 'W21', etc.
+
+    df = df.copy()
+    df.columns = [remove_year_prefix(col) for col in df.columns]
+    return df

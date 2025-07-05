@@ -52,7 +52,7 @@ def train_evaluate_model(X, y, description='', learning_graph_show=False):
     if learning_graph_show:
         visualization.draw_learning_curve(model)
 
-    return accuracy
+    return accuracy, model
 
 # Function: Train + SHAP analysis
 def train_and_analyze(X, Y, label=""):
