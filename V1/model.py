@@ -48,7 +48,7 @@ def XGBoost_for_all(X_resampled, y_resampled):
     return model
 
 
-def XGBoost(X_train, X_test, y_train, y_test, col_name):
+def XGBoost(X_train, X_test, y_train, y_test, col_name, learning_graph_show):
     num_boost_round = 100
 
     model = XGBClassifier(
@@ -65,8 +65,8 @@ def XGBoost(X_train, X_test, y_train, y_test, col_name):
     y_pred = model.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
     print("XGBoost Accuracy ========> ", accuracy * 100, "%")
-
-    draw_learning_curve(model, col_name)
+    if learning_graph_show:
+        draw_learning_curve(model, col_name)
 
     return model
 

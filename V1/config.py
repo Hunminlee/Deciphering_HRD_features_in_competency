@@ -1,5 +1,10 @@
 path = 'C:/Users/hml76/PycharmProjects/HRD2/Data/HCCPII_1_4/1_3. DATA(1차~4차)/1. SPSS/'
-file_names = ['HCCP_2ndWave_Head_1st(최종).sav', 'HCCP_2ndWave_Head_2nd(최종).sav', 'HCCP_2ndWave_Head_3rd(최종).sav', 'HCCP_2ndWave_Head_4th.sav']
+file_names_Work = ['HCCP_2ndWave_Work_1st_v2.sav', 'HCCP_2ndWave_Work_2nd_v2.sav',
+              'HCCP_2ndWave_Work_3rd_v3.sav', 'HCCP_2ndWave_Work_4th.sav']
+
+file_names_Head = ['HCCP_2ndWave_Head_1st(최종).sav', 'HCCP_2ndWave_Head_2nd(최종).sav',
+              'HCCP_2ndWave_Head_3rd(최종).sav', 'HCCP_2ndWave_Head_4th.sav']
+
 year = ['2020', '2021', '2022', '2023']
 
 
@@ -12,14 +17,14 @@ HRD_idx = ['C21C01_01', 'C21C01_02', 'C21C01_03', 'C21C01_04A1','C21C01_04B1','C
 
 #target_col_2021 = ['C21C05_01H1', 'C21C05_01H2']
 #target_col_2023 = ['C23C05_01H1', 'C23C05_01H2']
-target_col_2021 = 'C21C05_01H2'
-target_col_2023 = 'C23C05_01H2'
+target_col = 'Q09A'
+#target_col_2023 = 'C23C05_01H2'
 
 
 middle_val = 3.0
 outlier_val = -8.0
 
-Target_Indices = [273, 275, 277, 281, 283, 285]
+#Target_Indices = [273, 275, 277, 281, 283, 285]
 
 
 FIs = ['C21C01_05','C21C01_06B1','C21C02_01B2','C21C02_01A','C21C01_04C1','C21C02_01B1','C21C02_01D','C21C01_04B2','C21C01_01','C21C02_01D1','C21C01_04C2','C21C02_02A1',
