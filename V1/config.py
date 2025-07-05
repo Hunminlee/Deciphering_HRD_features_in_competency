@@ -5,8 +5,7 @@ file_names_Work = ['HCCP_2ndWave_Work_1st_v2.sav', 'HCCP_2ndWave_Work_2nd_v2.sav
 file_names_Head = ['HCCP_2ndWave_Head_1st(최종).sav', 'HCCP_2ndWave_Head_2nd(최종).sav',
               'HCCP_2ndWave_Head_3rd(최종).sav', 'HCCP_2ndWave_Head_4th.sav']
 
-year = ['2020', '2021', '2022', '2023']
-
+year_list = ['2020', '2021', '2022', '2023']
 
 HRD_idx = ['C21C01_01', 'C21C01_02', 'C21C01_03', 'C21C01_04A1','C21C01_04B1','C21C01_04C1','C21C01_04A2','C21C01_04B2','C21C01_04C2','C21C01_05','C21C01_06A1',
         'C21C01_06A2','C21C01_06B1','C21C01_06B2','C21C01_07','C21C01_07A1','C21C01_07A2','C21C01_07B1','C21C01_07B2','C21C01_07C1','C21C01_07C2',

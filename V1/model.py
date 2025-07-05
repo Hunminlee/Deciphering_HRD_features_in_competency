@@ -13,8 +13,39 @@ import xgboost as xgb
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import accuracy_score
+
+
 from sklearn.model_selection import train_test_split
+from imblearn.combine import SMOTETomek
+from xgboost import XGBClassifier
+from sklearn.metrics import accuracy_score
+
+
+def train_evaluate_model(X, y, description=''):
+    print(f"\n🧪 Processing: {description}")
+    print(f"Original class distribution:\n{pd.Series(y).value_counts()}")
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+
+    # Apply SMOTE + Tomek (oversample + undersample)
+    smt = SMOTETomek(random_state=42)
+    X_resampled, y_resampled = smt.fit_resample(X_train, y_train)
+
+    print(f"Resampled class distribution:\n{pd.Series(y_resampled).value_counts()}")
+
+    # Train
+    model = XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=42)
+    model.fit(X_resampled, y_resampled)
+
+    # Evaluate
+    y_pred = model.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    print("XGBoost Accuracy ========> ", accuracy * 100, "%")
+    return accuracy
+
+
+
+
 
 
 def GB(X_train, X_test, y_train, y_test):
