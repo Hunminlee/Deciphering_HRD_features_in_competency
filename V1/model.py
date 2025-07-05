@@ -19,9 +19,11 @@ from sklearn.model_selection import train_test_split
 from imblearn.combine import SMOTETomek
 from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score
+import shap
+import visualization
 
 
-def train_evaluate_model(X, y, description=''):
+def train_evaluate_model(X, y, description='', learning_graph_show=False):
     print(f"\n🧪 Processing: {description}")
     print(f"Original class distribution:\n{pd.Series(y).value_counts()}")
 
@@ -41,10 +43,34 @@ def train_evaluate_model(X, y, description=''):
     y_pred = model.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
     print("XGBoost Accuracy ========> ", accuracy * 100, "%")
+
+    if learning_graph_show:
+        visualization.draw_learning_curve(model)
+
     return accuracy
 
+# Function: Train + SHAP analysis
+def train_and_analyze(X, Y, label=""):
+    y = Y.ravel() if isinstance(Y, np.ndarray) else Y.values.ravel()
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Train model
+    model = XGBClassifier()
+    model.fit(X_train, y_train)
+
+    # SHAP analysis
+    explainer = shap.Explainer(model)
+    shap_values = explainer(X_test)
+    importance = pd.DataFrame({
+        'feature': X.columns,
+        'importance': shap_values.values.mean(axis=0)
+    }).sort_values(by='importance', ascending=False)
+
+    return model, importance
 
 
+
+#############################################################
 
 
 
@@ -97,28 +123,10 @@ def XGBoost(X_train, X_test, y_train, y_test, col_name, learning_graph_show):
     accuracy = accuracy_score(y_test, y_pred)
     print("XGBoost Accuracy ========> ", accuracy * 100, "%")
     if learning_graph_show:
-        draw_learning_curve(model, col_name)
+        visualization.draw_learning_curve(model, col_name)
 
     return model
 
-
-def draw_learning_curve(model, col_name):
-    results = model.evals_result()
-
-    plt.rcParams['font.family'] = 'serif'
-    plt.rcParams['font.serif'] = 'Times New Roman'
-
-    epochs = len(results['validation_0']['logloss'])
-    x_axis = range(0, epochs)
-    plt.figure(figsize=(10, 6))
-    plt.plot(x_axis, results['validation_0']['logloss'], label='Train Log Loss')
-    plt.plot(x_axis, results['validation_1']['logloss'], label='Validation Log Loss')
-    plt.xlabel('Boosting Rounds', fontsize=18)
-    plt.ylabel('Log Loss', fontsize=18)
-    plt.title(f'{col_name} Learning Curve', fontsize=18)
-    plt.legend(fontsize=15)
-    plt.grid(True)
-    plt.show()
 
 
 def LightGBM(X_train, X_test, y_train, y_test):
