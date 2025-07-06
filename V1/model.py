@@ -184,7 +184,47 @@ def Dec_T(X_train, X_test, y_train, y_test):
     return model
 
 
-def feature_importance(model, X, df, meta):
+import numpy as np
+import matplotlib.pyplot as plt
+import xgboost as xgb
+
+def feature_importance(model, X, df_original, meta):
+    # 특성 중요도 추출
+    importances = model.feature_importances_
+    top_indices = np.argsort(importances)[::-1][:10]
+    top_features = X.columns[top_indices]
+
+    if not hasattr(meta, "column_labels"):
+        raise AttributeError("meta 객체에 column_labels 속성이 없습니다.")
+
+    # df_original을 기준으로 X.columns가 어디에 있는지 인덱스를 가져옴
+    col_label_map = {}
+    for col in X.columns:
+        if col in df_original.columns:
+            idx = df_original.columns.get_loc(col)
+            if idx < len(meta.column_labels):
+                col_label_map[col] = meta.column_labels[idx]
+            else:
+                col_label_map[col] = "Index out of range"
+        else:
+            col_label_map[col] = "Not in df_original"
+
+    # 상위 10개 중요도 출력
+    print("\n📌 Top 10 Feature Importances:")
+    for feat in top_features:
+        label = col_label_map.get(feat, "Unknown Label")
+        print(f"{feat}: {label}")
+
+    # 시각화
+    xgb.plot_importance(model, importance_type='gain',
+                        max_num_features=10,
+                        title='Top 10 Feature Importance (Gain)',
+                        xlabel='Gain', ylabel='Features')
+    plt.show()
+
+
+
+'''def feature_importance(model, X, df, meta):
     top_k = 12
 
     feature_importance = model.feature_importances_
@@ -215,7 +255,7 @@ def feature_importance(model, X, df, meta):
                         max_num_features=10,  # Display only the top 10 features
                         title='Feature Importance', xlabel='Feature Importance', ylabel='Features')
     plt.show()
-
+'''
 
 
 

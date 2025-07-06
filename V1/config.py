@@ -9,6 +9,8 @@ year_list = ['2020', '2021', '2022', '2023']
 
 target_col = 'Q09A'
 
+drop_cols = ['ID3', 'Q01B', 'Q02B', 'Q04', 'Q05B', 'Q09A', 'Q09B', 'Q09C', 'Q09D', 'Q09E', 'Q09F', 'Q09G', 'Q09H', 'Q18A', 'Q18B', 'Q31A','Q31B']
+
 middle_val = 3.0
 outlier_val = -8.0
 

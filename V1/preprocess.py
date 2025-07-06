@@ -156,6 +156,7 @@ def merge_worker_head_labels(dataset_Work, dataset_Head, year_w, year_h):
 
     # Drop ID columns from features
     merged = merged.drop(columns=[work_id_col, head_id_col, worker_id_col, work_company_id_col], errors='ignore')
+    merged = merged.drop(columns=[f'W{year_w[2:]}{col}' for col in config.drop_cols], errors='ignore')
     #y = merged[label_col]
 
     print(f"Year: {year_w} | Merged shape: {merged.shape} | work shape: {df_work.shape} | head shape: {df_head_selected.shape}")
