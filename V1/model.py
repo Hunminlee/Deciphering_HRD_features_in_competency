@@ -36,8 +36,20 @@ def train_evaluate_model(X, y, description='', learning_graph_show=False):
     print(f"Resampled class distribution:\n{pd.Series(y_resampled).value_counts()}")
 
     # Train
-    model = XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=42)
+    #model = XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=42)
 
+    #model.fit(X_resampled, y_resampled, eval_set=[(X_resampled, y_resampled), (X_test, y_test)],verbose=False)
+
+    model = XGBClassifier(
+        use_label_encoder=False,
+        eval_metric='logloss',
+        random_state=42,
+        max_depth=5,
+        n_estimators=100,
+        learning_rate=0.1
+    )
+
+    # Train the model
     model.fit(
         X_resampled, y_resampled,
         eval_set=[(X_resampled, y_resampled), (X_test, y_test)],
