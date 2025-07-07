@@ -29,7 +29,7 @@ def draw_learning_curve(model):
     plt.plot(x_axis, results['validation_1']['logloss'], label='Validation Log Loss')
     plt.xlabel('Boosting Rounds', fontsize=18)
     plt.ylabel('Log Loss', fontsize=18)
-    plt.title(f'Learning Curve', fontsize=18)
+    #plt.title(f'Learning Curve', fontsize=18)
     plt.legend(fontsize=15)
     plt.grid(True)
     plt.show()
