@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 from xgboost import XGBClassifier, plot_importance
 import xgboost as xgb
-# from lightgbm import LGBMClassifier
+from lightgbm import LGBMClassifier
 # from catboost import CatBoostClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.ensemble import RandomForestClassifier
@@ -66,7 +66,52 @@ def train_evaluate_model(X, y, description='', learning_graph_show=False):
 
     return accuracy, model
 
+
 # Function: Train + SHAP analysis
+def train_evaluate_model_LGBM(X, y, description='', learning_graph_show=False):
+    print(f"\n🧪 Processing: {description}")
+    print(f"Original class distribution:\n{pd.Series(y).value_counts()}")
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+
+    # Apply SMOTE + Tomek (oversample + undersample)
+    smt = SMOTETomek(random_state=42)
+    X_resampled, y_resampled = smt.fit_resample(X_train, y_train)
+
+    print(f"Resampled class distribution:\n{pd.Series(y_resampled).value_counts()}")
+
+    # Train
+    #model = XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=42)
+
+    #model.fit(X_resampled, y_resampled, eval_set=[(X_resampled, y_resampled), (X_test, y_test)],verbose=False)
+
+    model = LGBMClassifier(
+        use_label_encoder=False,
+        eval_metric='logloss',
+        random_state=42,
+        max_depth=5,
+        n_estimators=100,
+        learning_rate=0.1,
+        verbose=-1
+    )
+
+    # Train the model
+    model.fit(
+        X_resampled, y_resampled,
+        eval_set=[(X_resampled, y_resampled), (X_test, y_test)]
+    )
+
+    # Evaluate
+    y_pred = model.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    print("LightGBM Accuracy ========> ", accuracy * 100, "%")
+
+    if learning_graph_show:
+        visualization.draw_learning_curve(model)
+
+    return accuracy, model
+
+
 def train_and_analyze(X, Y, label=""):
     y = Y.ravel() if isinstance(Y, np.ndarray) else Y.values.ravel()
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -84,6 +129,7 @@ def train_and_analyze(X, Y, label=""):
     }).sort_values(by='importance', ascending=False)
 
     return model, importance
+
 
 
 
@@ -199,8 +245,9 @@ def Dec_T(X_train, X_test, y_train, y_test):
 import numpy as np
 import matplotlib.pyplot as plt
 import xgboost as xgb
+import lightgbm as lgbm
 
-def feature_importance(model, X, df_original, meta):
+def feature_importance(model, X, df_original, meta, GMB_type): #GMB_type = xgb or lightgbm
     # 특성 중요도 추출
     importances = model.feature_importances_
     top_indices = np.argsort(importances)[::-1][:10]
@@ -228,10 +275,16 @@ def feature_importance(model, X, df_original, meta):
         print(f"{feat}: {label}")
 
     # 시각화
-    xgb.plot_importance(model, importance_type='gain',
-                        max_num_features=10,
-                        title='Top 10 Feature Importance (Gain)',
-                        xlabel='Gain', ylabel='Features')
+    if GMB_type == 'LightGBM':
+        lgbm.plot_importance(model, importance_type='gain',
+                            max_num_features=10,
+                            title='Top 10 Feature Importance (Gain)',
+                            xlabel='Gain', ylabel='Features')
+    elif GMB_type == 'XGBoost':
+        xgb.plot_importance(model, importance_type='gain',
+                            max_num_features=10,
+                            title='Top 10 Feature Importance (Gain)',
+                            xlabel='Gain', ylabel='Features')
     plt.show()
 
 
